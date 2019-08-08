@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>貪食蛇</title>
+</head>
+
+<body>
+
+    <canvas id="can" width="400" height="400" style="background: slategrey"></canvas>
+    <script>
+        var sn = [42, 41], //sn佇列表示蛇身，初始節點存在但不顯示
+            dz = 43, //食物的位置
+            fx = 1, //1表示向右，-1表示向左，20表示向下，-20表示向上
+            n, ctx = document.getElementById("can").getContext("2d"); //n與下次移動的位置有關
+
+        //從0~399表示ctx裡[0~19]*[0~19]的所有節點，每20px一個節點
+        //用c表示填充一個矩形，以前兩個引數為x，y座標，後兩個引數為寬和高
+        function draw(t, c) {
+            ctx.fillStyle = c;
+            ctx.fillRect(t % 20 * 20 + 1, ~~(t / 20) * 20 + 1, 18, 18);
+        }
+        //當鍵盤上下左右鍵按下的時候改變fx方向
+        document.onkeydown = function (e) {
+            fx = sn[1] - sn[0] == (n = [-1, -20, 1, 20][(e || event).keyCode - 37] || fx) ? fx : n
+        };
+        ! function () {
+            sn.unshift(n = sn[0] + fx); //此時的n為下次蛇頭出現的位置，n進入佇列
+            //if語句判斷貪食蛇是否撞到自己或牆壁，碰到時返回，結束程式
+            if (sn.indexOf(n, 1) > 0 || n < 0 || n > 399 || fx == 1 && n % 20 == 0 || fx == -1 && n % 20 == 19)
+                return alert("GAME OVER");
+            draw(n, "Lime"); //畫出蛇頭下次出現的位置
+            if (n == dz) { //如果吃到食物時，產生一個蛇身以外的隨機的點，不會去掉蛇尾
+                while (sn.indexOf(dz = ~~(Math.random() * 400)) >= 0);
+                draw(dz, "Yellow");
+            } else //沒有吃到食物時正常移動，蛇尾出佇列
+                draw(sn.pop(), "slategrey");
+            setTimeout(arguments.callee, 130); //每隔0.13秒執行函式一次，可以調節蛇的速度
+        }();
+    </script>
+
+
+
+
+</body>
+
+</html>
